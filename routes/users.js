@@ -1,11 +1,11 @@
 var express = require('express');
 const { validateRequestSchema } = require('../middleware/validator-request-schema');
-const { schemaLogin } = require('../schema/loginSchema');
+const { schemaLogin, registerSchema } = require('../schema/loginSchema');
+const { register, login } = require('../controller/users.controller');
 var router = express.Router();
 
 /* GET users listing. */
-router.get('/', schemaLogin, validateRequestSchema, function (req, res, next) {
-  res.send('respond with a resource');
-});
+router.post('/login', schemaLogin, validateRequestSchema, login);
+router.post('/register', registerSchema, validateRequestSchema, register)
 
 module.exports = router;
