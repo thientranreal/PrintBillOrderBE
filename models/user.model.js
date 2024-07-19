@@ -11,6 +11,15 @@ const schemaUser = new mongoose.Schema({
     },
     address: {
         type: String
+    },
+    bankCode: {
+        type: String
+    },
+    bankName: {
+        type: String
+    },
+    tiktokUsername: {
+        type: String
     }
 })
 const UserModel = mongoose.model('Users', schemaUser)

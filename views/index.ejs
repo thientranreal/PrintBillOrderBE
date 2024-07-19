@@ -1,11 +1,29 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-  </body>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TikTok Live Chat</title>
+</head>
+
+<body>
+  <h1>TikTok Live Chat</h1>
+  <ul id="messages"></ul>
+
+  <script>
+    const ws = new WebSocket('ws://localhost:8080');
+
+    ws.onmessage = event => {
+      const data = JSON.parse(event.data);
+      console.log(data);
+      if (data.type === 'chat') {
+        const messageElement = document.createElement('li');
+        messageElement.textContent = data.message;
+        document.getElementById('messages').appendChild(messageElement);
+      }
+    };
+  </script>
+</body>
+
 </html>
