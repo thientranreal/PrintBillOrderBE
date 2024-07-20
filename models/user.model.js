@@ -18,6 +18,12 @@ const schemaUser = new mongoose.Schema({
     bankName: {
         type: String
     },
+    shopName: {
+        type: String
+    },
+    shopId: {
+        type: String
+    },
     tiktokUsername: {
         type: String
     }

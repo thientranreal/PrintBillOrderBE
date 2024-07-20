@@ -81,6 +81,7 @@ module.exports.scrapeTikTok = (req, res, next) => {
 
     // Broadcast data to all connected clients
     function broadcast(data) {
+
         wss.clients.forEach(async client => {
             if (client.readyState === WebSocket.OPEN) {
                 const message = new MessageModel({
