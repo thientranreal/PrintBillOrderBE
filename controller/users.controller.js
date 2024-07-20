@@ -2,8 +2,8 @@ const { hash } = require("bcrypt");
 const { comparePass, jwt, hashPass } = require("../lib/comon.lib");
 const UserModel = require("../models/user.model");
 const { WebcastPushConnection } = require('tiktok-live-connector');
-
 const WebSocket = require('ws');
+const MessageModel = require("../models/message.model");
 
 
 
@@ -68,39 +68,70 @@ module.exports.register = async (req, res, next) => {
 
 module.exports.scrapeTikTok = (req, res, next) => {
 
-    // Username of someone who is currently live
-    let tiktokUsername = "tule081103";
 
-    // Create a new wrapper object and pass the username
-    let connection = new WebcastPushConnection(tiktokUsername);
+    // const { _id } = req.user;
+    // Username of the TikTok live streamer
+    const username = 'camcamenak';
+
+    // Create a new connection
+    const tiktokConnection = new WebcastPushConnection(username);
+
+    // Create a WebSocket server
     const wss = new WebSocket.Server({ port: 8080 });
 
+    // Broadcast data to all connected clients
+    function broadcast(data) {
+        wss.clients.forEach(async client => {
+            if (client.readyState === WebSocket.OPEN) {
+                const message = new MessageModel({
+                    avatar: data.avatarUrl,
+                    message: data.message,
+                    nickname: data.nickname,
+                    userId: data.userId,
+                    user_id: 1
+                })
+                await message.save()
+                client.send(JSON.stringify(data));
+            }
+        });
+    }
+
+    // Listen for comments
+    tiktokConnection.on('chat', (data) => {
+        const userId = data.uniqueId;
+        const nickname = data.nickname; // Full name of the user
+        const avatarUrl = data.profilePictureUrl;
+        const message = data.comment;
+
+        // Prepare data to be sent to clients
+        const chatData = {
+            userId,
+            nickname,
+            avatarUrl,
+            message
+        };
+
+        console.log(`Username: ${userId}, Nickname: ${nickname}, Message: ${message}, Avatar URL: ${avatarUrl}`);
+
+        // Send data to all connected clients
+        broadcast(chatData);
+    });
+
+    // Connect to the live stream
+    tiktokConnection.connect().then(() => {
+        console.log('Connected to the live stream');
+    }).catch(err => {
+        console.error('Failed to connect', err);
+    });
 
     // Handle WebSocket connections
     wss.on('connection', ws => {
         console.log('Client connected');
-
-        // Event handler for chat messages
-        connection.on('chat', data => {
-            const message = `${data.uniqueId} (userId:${data.userId}) writes: ${data.comment}`;
-            console.log(message);
-
-            // Send the message to the connected client
-            ws.send(JSON.stringify({ type: 'chat', message: data.comment }));
-        });
-
-        // Handle client disconnections
         ws.on('close', () => {
             console.log('Client disconnected');
         });
     });
 
-    // Connect to the TikTok live stream
-    connection.connect().then(state => {
-        console.log(`Connected to roomId ${state.roomId}`);
-    }).catch(err => {
-        console.error('Failed to connect', err);
-    });
 
     // const puppeteer = require('puppeteer');
 

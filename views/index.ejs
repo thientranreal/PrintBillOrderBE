@@ -4,24 +4,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TikTok Live Chat</title>
+  <title>TikTok Live Comments</title>
 </head>
 
 <body>
-  <h1>TikTok Live Chat</h1>
-  <ul id="messages"></ul>
+  <h1>TikTok Live Comments</h1>
+  <ul id="comments"></ul>
 
   <script>
     const ws = new WebSocket('ws://localhost:8080');
 
-    ws.onmessage = event => {
+    ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      console.log(data);
-      if (data.type === 'chat') {
-        const messageElement = document.createElement('li');
-        messageElement.textContent = data.message;
-        document.getElementById('messages').appendChild(messageElement);
-      }
+      const commentList = document.getElementById('comments');
+      const commentItem = document.createElement('li');
+      commentItem.innerHTML = `
+                <img src="${data.avatarUrl}" alt="${data.nickname}" width="50" height="50">
+                <strong>${data.nickname}:</strong> ${data.message}
+            `;
+      commentList.appendChild(commentItem);
     };
   </script>
 </body>
