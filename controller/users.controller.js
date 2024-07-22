@@ -71,7 +71,7 @@ module.exports.scrapeTikTok = (req, res, next) => {
 
     // const { _id } = req.user;
     // Username of the TikTok live streamer
-    const username = 'camcamenak';
+    const username = 'chonlui2k5ne';
 
     // Create a new connection
     const tiktokConnection = new WebcastPushConnection(username);
