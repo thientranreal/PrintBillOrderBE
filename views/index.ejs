@@ -16,6 +16,7 @@
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
+
       const commentList = document.getElementById('comments');
       const commentItem = document.createElement('li');
       commentItem.innerHTML = `
