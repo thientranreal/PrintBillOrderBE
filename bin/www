@@ -37,11 +37,11 @@ wss.on('connection', (ws, req) => {
   });
 
   // Handle errors
-  ws.on('error', (error) => {
+  ws.on('error', (error, req) => {
     console.error('WebSocket error:', error);
   });
   // Replace this with the actual username you want to track
-  const tiktokUsername = 'quangnguyen1234564';
+  const { tiktokUsername } = req.user;
 
   // Initialize TikTok Live connection
   const tiktokLiveConnection = new WebcastPushConnection(tiktokUsername);
