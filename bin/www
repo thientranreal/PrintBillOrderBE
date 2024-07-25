@@ -25,7 +25,7 @@ var server = http.createServer(app);
 const WebSocket = require('ws');
 
 const wss = new WebSocket.Server({ server });
-wss.on('connection', (ws) => {
+wss.on('connection', (ws, req) => {
   console.log('New client connected');
 
   // Send a welcome message
@@ -41,7 +41,7 @@ wss.on('connection', (ws) => {
     console.error('WebSocket error:', error);
   });
   // Replace this with the actual username you want to track
-  const tiktokUsername = 'ddghost';
+  const tiktokUsername = 'quangnguyen1234564';
 
   // Initialize TikTok Live connection
   const tiktokLiveConnection = new WebcastPushConnection(tiktokUsername);

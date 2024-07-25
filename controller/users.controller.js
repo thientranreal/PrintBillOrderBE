@@ -68,40 +68,37 @@ module.exports.register = async (req, res, next) => {
 
 module.exports.scrapeTikTok = (req, res, next) => {
 
-    try {
+    const tiktokUsername = 'ddghost';
 
-        // const { _id } = req.user;
-        // Username of the TikTok live streamer
-        const username = 'mpl.id.official';
+    const tiktokLiveConnection = new WebcastPushConnection(tiktokUsername);
 
-        // Create a new connection
-        const tiktokLiveConnection = new WebcastPushConnection(username);
-        // Handle incoming messages from TikTok Live
-        tiktokLiveConnection.connect().then(state => {
-            console.log(`Connected to roomId ${state.roomId}`);
+    tiktokLiveConnection.connect().then(state => {
+        console.log(`Connected to roomId ${state.roomId}`);
 
-            tiktokLiveConnection.on('chat', data => {
-                const message = {
-                    username: data.nickname,
-                    message: data.comment,
-                };
-                console.log('Received message:', message);
+        tiktokLiveConnection.on('chat', data => {
+            const message = {
+                uniqueId: data.uniqueId,
+                username: data.nickname,
+                nickname: data.nickname,
+                message: data.comment,
+                avatarUrl: data.profilePictureUrl
+            };
+            console.log('Received message:', message);
 
-                // Broadcast the message to all WebSocket clients
-                wss.clients.forEach(client => {
-                    if (client.readyState === WebSocket.OPEN) {
-                        client.send(JSON.stringify(message));
-                    }
-                });
+            // Broadcast the message to all WebSocket clients
+            wss.clients.forEach(client => {
+                if (client.readyState === WebSocket.OPEN) {
+                    client.send(JSON.stringify(message));
+                }
             });
-
-        }).catch(err => {
-            console.error('Failed to connect to TikTok live:', err);
         });
 
-    } catch (error) {
-        console.log(error);
-    }
+        // res.status(200).json({ message: 'Phien Live Dang Ket Noi', data: [] });
+
+    }).catch(err => {
+        console.error('Failed to connect to TikTok live:', err);
+        // res.status(201).json({ message: 'Hien tai chua co phien live', data: [] });
+    });
     // Upgrade the HTTP server to handle WebSocket connections
 
 
