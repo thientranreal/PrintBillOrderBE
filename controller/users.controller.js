@@ -68,70 +68,43 @@ module.exports.register = async (req, res, next) => {
 
 module.exports.scrapeTikTok = (req, res, next) => {
 
+    try {
 
-    // const { _id } = req.user;
-    // Username of the TikTok live streamer
-    const username = 'anhnammegame';
+        // const { _id } = req.user;
+        // Username of the TikTok live streamer
+        const username = 'mpl.id.official';
 
-    // Create a new connection
-    const tiktokConnection = new WebcastPushConnection(username);
+        // Create a new connection
+        const tiktokLiveConnection = new WebcastPushConnection(username);
+        // Handle incoming messages from TikTok Live
+        tiktokLiveConnection.connect().then(state => {
+            console.log(`Connected to roomId ${state.roomId}`);
 
-    // Create a WebSocket server
-    const wss = new WebSocket.Server({ port: 8080 });
+            tiktokLiveConnection.on('chat', data => {
+                const message = {
+                    username: data.nickname,
+                    message: data.comment,
+                };
+                console.log('Received message:', message);
 
-    // Broadcast data to all connected clients
-    function broadcast(data) {
+                // Broadcast the message to all WebSocket clients
+                wss.clients.forEach(client => {
+                    if (client.readyState === WebSocket.OPEN) {
+                        client.send(JSON.stringify(message));
+                    }
+                });
+            });
 
-        wss.clients.forEach(async client => {
-            if (client.readyState === WebSocket.OPEN) {
-                const message = new MessageModel({
-                    avatar: data.avatarUrl,
-                    message: data.message,
-                    nickname: data.nickname,
-                    userId: data.userId,
-                    user_id: 1
-                })
-                await message.save()
-                client.send(JSON.stringify(data));
-            }
+        }).catch(err => {
+            console.error('Failed to connect to TikTok live:', err);
         });
+
+    } catch (error) {
+        console.log(error);
     }
+    // Upgrade the HTTP server to handle WebSocket connections
 
-    // Listen for comments
-    tiktokConnection.on('chat', (data) => {
-        const userId = data.uniqueId;
-        const nickname = data.nickname; // Full name of the user
-        const avatarUrl = data.profilePictureUrl;
-        const message = data.comment;
 
-        // Prepare data to be sent to clients
-        const chatData = {
-            userId,
-            nickname,
-            avatarUrl,
-            message
-        };
-
-        console.log(`Username: ${userId}, Nickname: ${nickname}, Message: ${message}, Avatar URL: ${avatarUrl}`);
-
-        // Send data to all connected clients
-        broadcast(chatData);
-    });
-
-    // Connect to the live stream
-    tiktokConnection.connect().then(() => {
-        console.log('Connected to the live stream');
-    }).catch(err => {
-        console.error('Failed to connect', err);
-    });
-
-    // Handle WebSocket connections
-    wss.on('connection', ws => {
-        console.log('Client connected');
-        ws.on('close', () => {
-            console.log('Client disconnected');
-        });
-    });
 
 
     // const puppeteer = require('puppeteer');

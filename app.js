@@ -15,7 +15,6 @@ const expressWs = require('express-ws');
 
 var app = express();
 
-expressWs(app);
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -32,27 +31,6 @@ app.use('/api/users', usersRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
-});
-app.ws('/users/api/tiktokLive', (ws, req) => {
-
-  console.log('New client connected to /users/api/tiktokLive');
-
-  const interval = setInterval(() => {
-    const data = {
-      message: 'Hello from server',
-      avatar: 'https://example.com/avatar.png'
-    };
-    ws.send(JSON.stringify(data));
-  }, 5000);
-
-  ws.on('close', () => {
-    console.log('Client disconnected');
-    clearInterval(interval);
-  });
-
-  res.render('index', { title: "test" })
-
-
 });
 
 
