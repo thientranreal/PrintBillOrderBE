@@ -8,7 +8,7 @@ var router = express.Router();
 /* GET users listing. */
 router.post('/login', schemaLogin, validateRequestSchema, login);
 router.post('/register', registerSchema, validateRequestSchema, register);
-router.get('/tiktokLive', scrapeTikTok);
+// router.get('/tiktokLive', scrapeTikTok);
 router.get('/profile', verifyAccount, profile);
 router.put('/profile', verifyAccount, updateProfile);
 router.get('/logout', logout);

@@ -141,9 +141,10 @@ module.exports.logout = (req, res) => {
   res.clearCookie("token");
   res.end();
 };
-module.exports.profile = (req, res, next) => {
+module.exports.profile = async (req, res, next) => {
   try {
-    const { user } = req;
+    const { _id } = req.user;
+    const user = await UserModel.findOne({ _id }).lean();
     res.status(200).json({
       message: "Lấy thông tin khách hàng thành công",
       data: [{ user }],
