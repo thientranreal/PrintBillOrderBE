@@ -163,7 +163,7 @@ module.exports.updateProfile = async (req, res, next) => {
     if (update) {
       return res.status(200).json({
         message: "Cập nhật thông tin khách hàng thành công",
-        data: [update],
+        data: [],
       });
     }
     return res
